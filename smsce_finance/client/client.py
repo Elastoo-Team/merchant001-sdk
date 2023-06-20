@@ -47,7 +47,8 @@ def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
 @dataclass(kw_only=True)
 class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextManager["Client"]):
     url: str = field()
-    token: str = field()
+    user_id: str = field()
+    user_groups: str = field()
     is_async: bool = field(default=False)
     close_on_exit: bool = field(default=False)
     _client: httpx.AsyncClient | None = field(default=None)
@@ -204,7 +205,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     async def _open(self) -> None:
         """_open."""
 
-        self._client = httpx.AsyncClient(base_url=self.url, headers=httpx.Headers({"X-Auth-Token": self.token}))
+        self._client = httpx.AsyncClient(base_url=self.url, headers=httpx.Headers({"X-UserId": self.user_id, "X-Groups": self.user_groups}))
 
         await self._client.__aenter__()
 
