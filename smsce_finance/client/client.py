@@ -49,6 +49,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     url: str = field()
     user_id: str = field()
     user_groups: str = field()
+    cookies: dict[str, t.Any] = field(default_factory=dict)
     is_async: bool = field(default=False)
     close_on_exit: bool = field(default=False)
     _client: httpx.AsyncClient | None = field(default=None)
@@ -143,6 +144,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
             method,
             path,
             data=request_validator(**data).data if data and request_validator else None,
+            cookies=self.cookies,
         )
 
         if response.status_code != http.HTTPStatus.OK:
@@ -205,7 +207,10 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     async def _open(self) -> None:
         """_open."""
 
-        self._client = httpx.AsyncClient(base_url=self.url, headers=httpx.Headers({"X-UserId": self.user_id, "X-Groups": self.user_groups}))
+        self._client = httpx.AsyncClient(
+            base_url=self.url,
+            headers=httpx.Headers({"X-UserId": self.user_id, "X-Groups": self.user_groups}),
+        )
 
         await self._client.__aenter__()
 
