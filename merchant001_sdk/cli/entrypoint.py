@@ -2,14 +2,11 @@ import typing
 
 from cliar import Cliar
 
-from smsce_finance.__about__ import __version__
-from smsce_finance.cli.groups import AccountGroup
+from merchant001_sdk.__about__ import __version__
 
 
 class App(Cliar):
     """App entrypoint."""
-
-    account = AccountGroup
 
     def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)

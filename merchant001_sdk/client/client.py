@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import functools
 import http
-import re
 import typing as t
 from contextlib import AbstractAsyncContextManager, AbstractContextManager
 from dataclasses import dataclass, field
@@ -11,12 +10,9 @@ from types import TracebackType
 
 import httpx
 
-from smsce_finance.core.data.enum.statuses import RestAPIStatus
-from smsce_finance.core.data.schemas import requests, responses
-from smsce_finance.core.data.schemas.base import BaseSchema
-from smsce_finance.core.errors.client_closed import FinanceClientClosed
-from smsce_finance.core.errors.http_error import ClientResponseHTTPError
-from smsce_finance.core.errors.internal_code_error import ClientResponseInternalError
+from merchant001_sdk.core.data.schemas.base import BaseSchema
+from merchant001_sdk.core.errors.client_closed import SDKClientClosed
+from merchant001_sdk.core.errors.http_error import ClientResponseHTTPError
 
 
 def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
@@ -46,7 +42,7 @@ def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
 
 @dataclass(kw_only=True)
 class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextManager["Client"]):
-    url: str = field()
+    endpoint: str = field()
     user_id: str = field()
     user_groups: str = field()
     cookies: dict[str, t.Any] = field(default_factory=dict)
@@ -54,77 +50,6 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     close_on_exit: bool = field(default=False)
     _client: httpx.AsyncClient | None = field(default=None)
     _loop: asyncio.AbstractEventLoop | None = field(default=None)
-
-    @sync_or_async()
-    async def get_account_balance(self) -> dict[str, t.Any]:
-        """get_account_balance."""
-
-        return await self._request(  # type: ignore
-            http.HTTPMethod.POST,
-            "account/get",
-            request_validator=None,
-            response_validator=responses.GetAccountBalance,
-        )
-
-    @sync_or_async()
-    async def get_accounts_status(self, user_id: str | None = None) -> list[dict[str, t.Any]]:
-        """Get_accounts_status."""
-
-        return await self._request(  # type: ignore
-            http.HTTPMethod.POST,
-            "account/list",
-            data={"user_id": user_id},
-            is_list=True,
-            request_validator=requests.ListAccounts,
-            response_validator=responses.ListAccounts,
-        )
-
-    @sync_or_async()
-    async def create_payment_url(self) -> dict[str, t.Any]:
-        """create_payment_url."""
-
-        return await self._request(  # type: ignore
-            http.HTTPMethod.POST,
-            "charge/create",
-            request_validator=None,
-            response_validator=responses.CreateMoneyURL,
-        )
-
-    @sync_or_async()  # type: ignore
-    async def create_money_movement(
-        self,
-        user_id: str,
-        description: str,
-        sum: float,
-        type: int,
-        code: str | None = None,
-    ) -> None:
-        """Create_money_move."""
-
-        await self._request(
-            http.HTTPMethod.POST,
-            "movements/create",
-            data={"user_id": user_id, "description": description, "sum": sum, "type": type, "code": code},
-            response_validator=None,
-            request_validator=requests.CreateMoneyMovement,
-        )
-
-    @sync_or_async()  # type: ignore
-    async def get_money_movements(
-        self,
-        date_begin: str,
-        date_end: str,
-        user_id: str | None = None,
-    ) -> list[dict[str, t.Any]]:
-        """get_money_movements."""
-
-        return await self._request(  # type: ignore
-            http.HTTPMethod.POST,
-            "movements/get",
-            data={"user_id": user_id, "date_begin": date_begin, "date_end": date_end},
-            is_list=True,
-            request_validator=requests.GetMoneyMovement,
-        )
 
     async def _request(
         self,
@@ -138,7 +63,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """_request."""
 
         if not self._client or self._client.is_closed:
-            raise FinanceClientClosed("Client is closed.")
+            raise SDKClientClosed("Client is closed.")
 
         response = await self._client.request(
             method,
@@ -152,14 +77,6 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         response_data = response.json()
 
-        if response_data["status"]["errcode"] != RestAPIStatus.OK:
-            raise ClientResponseInternalError(
-                (
-                    f"Error internal status code in request on {path}: {response_data['status']['errcode']} ->"
-                    f" \"{response_data['status']['errmsg']}\""
-                ),
-            )
-
         results = response_data.get("data")
 
         if response_validator and results:
@@ -169,29 +86,6 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
                 results = response_validator(**response_data["data"]).data
 
         return results
-
-    def validate_url(self, value: str) -> str:
-        """Validate_url.
-
-        Args:
-            value (str): url for client
-
-        Returns:
-            str: valid url
-        """
-        regex = re.compile(
-            r"^(?:http|ftp)s?://"
-            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"
-            r"localhost|"
-            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"
-            r"(?::\d+)?"
-            r"(?:/?|[/?]\S+)$",
-            re.IGNORECASE,
-        )
-
-        assert re.match(regex, value) is not None, "Invalid URL"
-
-        return value
 
     @sync_or_async()
     async def _close(self) -> None:
@@ -208,7 +102,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """_open."""
 
         self._client = httpx.AsyncClient(
-            base_url=self.url,
+            base_url=self.endpoint,
             headers=httpx.Headers({"X-UserId": self.user_id, "X-Groups": self.user_groups}),
         )
 

@@ -1,4 +1,4 @@
-from smsce_finance.cli import App
+from merchant001_sdk.cli import App
 
 
 def start() -> None:
