@@ -36,19 +36,23 @@ pdm add merchant001_sdk[cli]
 
 ### Sync
 
-'''python3
+```python3
 from merchant001_sdk.client import Client
 
-with Client(token=...) as client: # comming soon...
 
-'''
+with Client(token=...) as client:
+    # comming soon...
+
+```
 
 ### Async
 
-'''python3
+```python3
 from merchant001_sdk.client import Client
 
-async def main(token: str) -> None:
-async with Client(token=...) as client: # comming soon...
 
-'''
+async def main(token: str) -> None:
+    async with Client(token=...) as client:
+        # comming soon...
+
+```
