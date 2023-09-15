@@ -1,0 +1,25 @@
+image: python:3.11-buster
+
+before_script:
+  - rm /bin/sh && ln -s /bin/bash /bin/sh
+  - apt update
+  - apt install -y gcc linux-libc-dev libffi-dev libssl-dev libsystemd-dev
+  - pip install -U pip pdm
+
+  - python3 -V
+
+  - pdm install -G :all
+
+package:
+  variables:
+    PDM_PUBLISH_PASSWORD: $PDM_PUBLISH_PASSWORD
+    PDM_PUBLISH_USERNAME: $PDM_PUBLISH_USERNAME
+
+  stage: deploy
+  script:
+    - cat $PYPIRC > /tmp/.pypirc
+
+    - pdm build
+    - pdm publish --no-build -P "$PDM_PUBLISH_PASSWORD" -u "$PDM_PUBLISH_USERNAME"
+  only:
+    - tags
