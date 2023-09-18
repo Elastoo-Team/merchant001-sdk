@@ -10,6 +10,7 @@ from types import TracebackType
 
 import httpx
 
+from merchant001_sdk.core.data.schemas import responses
 from merchant001_sdk.core.data.schemas.base import BaseSchema
 from merchant001_sdk.core.errors.client_closed import SDKClientClosed
 from merchant001_sdk.core.errors.http_error import ClientResponseHTTPError
@@ -25,15 +26,12 @@ def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
         def wrapper(
             self: Client, *args: t.Tuple[t.Any, ...], **kwargs: t.Dict[str, t.Any]
         ) -> t.Union[t.Any, t.Coroutine[None, None, None]]:
-            if not self._loop or self._loop.is_closed():
-                self._loop = asyncio.get_event_loop()
-
             coro = func(self, *args, **kwargs)
 
             if self.is_async:
                 return coro
             else:
-                return self._loop.create_task(coro)
+                return asyncio.run(coro)
 
         return wrapper  # type: ignore
 
@@ -44,21 +42,46 @@ def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
 class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextManager["Client"]):
     endpoint: str = field()
     token: str = field()
+    token_prefix: str = field(default="Bearer")
     cookies: dict[str, t.Any] = field(default_factory=dict)
     is_async: bool = field(default=False)
     close_on_exit: bool = field(default=False)
     _client: httpx.AsyncClient | None = field(default=None)
-    _loop: asyncio.AbstractEventLoop | None = field(default=None)
+
+    @sync_or_async()
+    async def get_merchant_healthcheck(self) -> responses.MerchantHealthcheck | responses.ErrorResult:
+        """get_merchant_healthcheck."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.POST,
+            "v1/healthcheck/merchant/",
+            request_validator=None,
+            response_validator=None,
+            return_raw=True,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.CREATED:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.MerchantHealthcheck(success=body_data.get("success"))
 
     async def _request(
         self,
         method: http.HTTPMethod,
         path: str,
         is_list: bool = False,
+        return_raw: bool = False,
         request_validator: type[BaseSchema] | None = None,
         response_validator: type[BaseSchema] | None = None,
         data: dict[str, t.Any] | None = None,
-    ) -> dict[str, t.Any] | list[dict[str, t.Any]] | None:
+        success_status: tuple[http.HTTPStatus, ...] = (http.HTTPStatus.OK,),
+    ) -> BaseSchema | list[BaseSchema] | None:
         """_request."""
 
         if not self._client or self._client.is_closed:
@@ -71,18 +94,23 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
             cookies=self.cookies,
         )
 
-        if response.status_code != http.HTTPStatus.OK:
+        if return_raw:
+            return responses.RawResult(
+                status_code=response.status_code,
+                body=response.text,
+                content_type=response.headers.get("Content-Type"),
+            )
+
+        if response.status_code not in success_status:
             raise ClientResponseHTTPError(f"Error http status code in request on {path}: {response.status_code}.")
 
-        response_data = response.json()
-
-        results = response_data.get("data")
+        results = response.json()
 
         if response_validator and results:
             if is_list:
-                results = [response_validator(**d).data for d in results]
+                results = [response_validator(**d) for d in results]
             else:
-                results = response_validator(**response_data["data"]).data
+                results = response_validator(**results)
 
         return results
 
@@ -100,7 +128,10 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     async def _open(self) -> None:
         """_open."""
 
-        self._client = httpx.AsyncClient(base_url=self.endpoint, headers={"Authorization": f"Bearer {self.token}"})
+        self._client = httpx.AsyncClient(
+            base_url=self.endpoint,
+            headers={"Authorization": f"{self.token_prefix} {self.token}"},
+        )
 
         await self._client.__aenter__()
 
