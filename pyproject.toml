@@ -10,6 +10,7 @@ dependencies = [
 requires-python = ">=3.10,<3.12"
 license = {text = "EULA"}
 dynamic = ["version"]
+readme = "README.md"
 
 [project.scripts]
 merchant001-sdk = "merchant001_sdk.__main__:start"
