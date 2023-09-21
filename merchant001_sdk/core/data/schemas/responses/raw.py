@@ -18,25 +18,3 @@ class RawResult(BaseSchema):
     @property
     def data(self) -> dict[str, t.Any]:
         return {"status_code": self.status_code, "body": self.body, "content_type": self.content_type}
-
-
-@dataclass(frozen=True, kw_only=True)
-class ErrorResult(BaseSchema):
-    status_code: http.HTTPStatus = field()
-    message: str | None = field(default=None)
-    error: str | None = field(default=None)
-
-    @property
-    def data(self) -> dict[str, t.Any]:
-        return {"status_code": self.status_code, "error": self.error, "message": self.message}
-
-
-@dataclass(frozen=True, kw_only=True)
-class MerchantHealthcheck(BaseSchema):
-    success: bool = field()
-
-    @property
-    def data(self) -> dict[str, bool]:
-        return {
-            "success": self.success,
-        }

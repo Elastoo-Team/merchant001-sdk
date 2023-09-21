@@ -49,14 +49,12 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     _client: httpx.AsyncClient | None = field(default=None)
 
     @sync_or_async()
-    async def get_merchant_healthcheck(self) -> responses.MerchantHealthcheck | responses.ErrorResult:
+    async def get_merchant_healthcheck(self) -> responses.healthcheck.MerchantHealthcheck | responses.ErrorResult:
         """get_merchant_healthcheck."""
 
         result: responses.RawResult = await self._request(  # type: ignore
             http.HTTPMethod.POST,
             "v1/healthcheck/merchant/",
-            request_validator=None,
-            response_validator=None,
             return_raw=True,
         )
 
@@ -69,7 +67,234 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
                 error=body_data.get("error"),
             )
 
-        return responses.MerchantHealthcheck(success=body_data.get("success"))
+        return responses.healthcheck.MerchantHealthcheck(success=body_data.get("success"))
+
+    @sync_or_async()
+    async def get_payment_methods(
+        self,
+        raw_dict: bool = False,
+        method_names_only: bool = False,
+        amount: int | None = None,
+    ) -> (
+        dict[str, dict[str, dict[str, t.Any]]]
+        | list[responses.payment_method.PaymentMethodType]
+        | responses.ErrorResult
+    ):
+        """get_payment_methods."""
+
+        params = {}
+
+        if not raw_dict:
+            params["makeArray"] = 1
+
+        if method_names_only:
+            params["onlyMethod"] = 1
+
+        if amount is not None and amount > 0:
+            params["amount"] = amount
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.GET,
+            "v1/payment-method/merchant/available",
+            return_raw=True,
+            params=params,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        if raw_dict:
+            return body_data
+        else:
+            return [responses.payment_method.PaymentMethodType(**mt) for mt in body_data]  # type: ignore
+
+    @sync_or_async()
+    async def create_transaction(
+        self,
+        pricing: dict[str, dict[str, str | float]],
+        provider_type: str,
+        provider_method: str,
+        is_partner_fee: bool = False,
+    ) -> responses.transaction.CreatedTransaction | responses.ErrorResult:
+        """create_transaction."""
+
+        data = {
+            "isPartnerFee": is_partner_fee,
+            "pricing": pricing,
+            "selectedProvider": {"type": provider_type, "method": provider_method},
+        }
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.POST,
+            "v1/transaction/merchant",
+            return_raw=True,
+            data=data,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.CreatedTransaction(**body_data)
+
+    @sync_or_async()
+    async def get_transaction(
+        self,
+        transaction_id: str,
+    ) -> responses.transaction.GettedTransaction | responses.ErrorResult:
+        """get_transaction."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.GET,
+            f"v1/transaction/merchant/{transaction_id}",
+            return_raw=True,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.GettedTransaction(**body_data)
+
+    @sync_or_async()
+    async def get_transaction_requisite(
+        self,
+        transaction_id: str,
+    ) -> responses.transaction.GettedTransactionRequisite | responses.ErrorResult:
+        """get_transaction_requisite."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.GET,
+            f"v1/transaction/merchant/requisite/{transaction_id}",
+            return_raw=True,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.GettedTransactionRequisite(**body_data)
+
+    @sync_or_async()
+    async def claim_transaction_paid(
+        self,
+        transaction_id: str,
+    ) -> responses.transaction.Transaction | responses.ErrorResult:
+        """claim_transaction_paid."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.POST,
+            f"v1/transaction/merchant/paid/{transaction_id}",
+            return_raw=True,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.Transaction(**body_data)
+
+    @sync_or_async()
+    async def claim_transaction_canceled(
+        self,
+        transaction_id: str,
+    ) -> responses.transaction.Transaction | responses.ErrorResult:
+        """claim_transaction_canceled."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.POST,
+            f"v1/transaction/merchant/cancel/{transaction_id}",
+            return_raw=True,
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.Transaction(**body_data)
+
+    @sync_or_async()
+    async def set_transaction_payment_method(
+        self,
+        transaction_id: str,
+        provider_type: str,
+        provider_method: str,
+    ) -> responses.transaction.CreatedTransaction | responses.ErrorResult:
+        """claim_transaction_canceled."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.POST,
+            f"v1/transaction/merchant/provider/{transaction_id}",
+            return_raw=True,
+            data={"selectedProvider": {"method": provider_method, "type": provider_type}},
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.transaction.CreatedTransaction(**body_data)
+
+    @sync_or_async()
+    async def get_payment_method_rate(
+        self,
+        payment_method: str,
+    ) -> responses.rate.PayemntMethodRate | responses.ErrorResult:
+        """claim_transaction_canceled."""
+
+        result: responses.RawResult = await self._request(  # type: ignore
+            http.HTTPMethod.GET,
+            f"v1/rate/",
+            return_raw=True,
+            params={"method": payment_method},
+        )
+
+        body_data = result.get_json() or {}
+
+        if result.status_code != http.HTTPStatus.OK:
+            return responses.ErrorResult(
+                status_code=result.status_code,
+                message=body_data.get("message"),
+                error=body_data.get("error"),
+            )
+
+        return responses.rate.PayemntMethodRate(**body_data)
 
     async def _request(
         self,
@@ -81,6 +306,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         response_validator: type[BaseSchema] | None = None,
         data: dict[str, t.Any] | None = None,
         success_status: tuple[http.HTTPStatus, ...] = (http.HTTPStatus.OK,),
+        params: dict[str, t.Any] | None = None,
     ) -> BaseSchema | list[BaseSchema] | None:
         """_request."""
 
@@ -90,8 +316,9 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         response = await self._client.request(
             method,
             path,
-            data=request_validator(**data).data if data and request_validator else None,
+            data=request_validator(**data).data if data and request_validator else data if data else None,
             cookies=self.cookies,
+            params=params,
         )
 
         if return_raw:
