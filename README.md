@@ -89,9 +89,9 @@ ErrorResult(status_code=401, message='Unavailable api token', error='Unauthorize
 ### Payment Methods List
 
 Params:
-raw_dict (boolean) - eq. to makeArray, default is false.
-method_names_only (boolean) - eq. to onlyMethod, default is false.
-amount (int; > 0) - eq. to amount, default is null (optional).
+- raw_dict (boolean) - eq. to makeArray, default is false.
+- method_names_only (boolean) - eq. to onlyMethod, default is false.
+- amount (int; > 0) - eq. to amount, default is null (optional).
 
 ```python3
 from merchant001_sdk.client import Client
@@ -138,7 +138,12 @@ from merchant001_sdk.client import Client
 
 async def main(token: str) -> None:
     async with Client(token=token, endpoint="https://api.merchant001.io/") as client:
-        result = await client.create_transaction(pricing={"local": {"amount": 1, "currency": "RUB"}}, provider_type="GATE [RUB/USDT] CARD", provider_method="SBERBANK", is_partner_fee=False)
+        result = await client.create_transaction(
+            pricing={"local": {"amount": 1, "currency": "RUB"}},
+            provider_type="GATE [RUB/USDT] CARD",
+            provider_method="SBERBANK",
+            is_partner_fee=False,
+        )
 
     print(result)
 ```
@@ -146,7 +151,8 @@ async def main(token: str) -> None:
 ### Get Transaction
 
 Params:
-transaction_id (str)
+
+- transaction_id (str)
 
 ```python3
 from merchant001_sdk.client import Client
@@ -162,7 +168,8 @@ async def main(token: str, transaction_id: str) -> None:
 ### Get Transaction Requisite
 
 Params:
-transaction_id (str)
+
+- transaction_id (str)
 
 ```python3
 from merchant001_sdk.client import Client
@@ -178,7 +185,8 @@ async def main(token: str, transaction_id: str) -> None:
 ### Claim Transaction as PAID
 
 Params:
-transaction_id (str)
+
+- transaction_id (str)
 
 ```python3
 from merchant001_sdk.client import Client
@@ -194,7 +202,8 @@ async def main(token: str, transaction_id: str) -> None:
 ### Claim Transaction as CANCELED
 
 Params:
-transaction_id (str)
+
+- transaction_id (str)
 
 ```python3
 from merchant001_sdk.client import Client
@@ -210,17 +219,24 @@ async def main(token: str, transaction_id: str) -> None:
 ### Set Transaction payment method
 
 Params:
-transaction_id (str)
-provider_type (str)
-provider_method (str)
+
+- transaction_id (str)
+- provider_type (str)
+- provider_method (str)
 
 ```python3
 from merchant001_sdk.client import Client
 
 
-async def main(token: str, transaction_id: str, provider_type: str, provider_method: str) -> None:
+async def main(
+    token: str, transaction_id: str, provider_type: str, provider_method: str
+) -> None:
     async with Client(token=token, endpoint="https://api.merchant001.io/") as client:
-        result = await client.set_transaction_payment_method(transaction_id=transaction_id, provider_type=provider_type, provider_method=provider_method)
+        result = await client.set_transaction_payment_method(
+            transaction_id=transaction_id,
+            provider_type=provider_type,
+            provider_method=provider_method,
+        )
 
     print(result)
 ```
@@ -228,7 +244,8 @@ async def main(token: str, transaction_id: str, provider_type: str, provider_met
 ### Get Payment Method Rate
 
 Params:
-payment_method (str)
+
+- payment_method (str)
 
 ```python3
 from merchant001_sdk.client import Client
