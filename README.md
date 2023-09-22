@@ -89,6 +89,7 @@ ErrorResult(status_code=401, message='Unavailable api token', error='Unauthorize
 ### Payment Methods List
 
 Params:
+
 - raw_dict (boolean) - eq. to makeArray, default is false.
 - method_names_only (boolean) - eq. to onlyMethod, default is false.
 - amount (int; > 0) - eq. to amount, default is null (optional).

@@ -53,7 +53,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """get_merchant_healthcheck."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.POST,
+            "POST",
             "v1/healthcheck/merchant/",
             return_raw=True,
         )
@@ -94,7 +94,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
             params["amount"] = amount
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.GET,
+            "GET",
             "v1/payment-method/merchant/available",
             return_raw=True,
             params=params,
@@ -131,7 +131,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         }
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.POST,
+            "POST",
             "v1/transaction/merchant",
             return_raw=True,
             data=data,
@@ -156,7 +156,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """get_transaction."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.GET,
+            "GET",
             f"v1/transaction/merchant/{transaction_id}",
             return_raw=True,
         )
@@ -180,7 +180,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """get_transaction_requisite."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.GET,
+            "GET",
             f"v1/transaction/merchant/requisite/{transaction_id}",
             return_raw=True,
         )
@@ -204,7 +204,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """claim_transaction_paid."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.POST,
+            "POST",
             f"v1/transaction/merchant/paid/{transaction_id}",
             return_raw=True,
         )
@@ -228,7 +228,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """claim_transaction_canceled."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.POST,
+            "POST",
             f"v1/transaction/merchant/cancel/{transaction_id}",
             return_raw=True,
         )
@@ -254,7 +254,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """claim_transaction_canceled."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.POST,
+            "POST",
             f"v1/transaction/merchant/provider/{transaction_id}",
             return_raw=True,
             data={"selectedProvider": {"method": provider_method, "type": provider_type}},
@@ -279,7 +279,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         """claim_transaction_canceled."""
 
         result: responses.RawResult = await self._request(  # type: ignore
-            http.HTTPMethod.GET,
+            "GET",
             f"v1/rate/",
             return_raw=True,
             params={"method": payment_method},
@@ -298,7 +298,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
     async def _request(
         self,
-        method: http.HTTPMethod,
+        method: str,
         path: str,
         is_list: bool = False,
         return_raw: bool = False,
