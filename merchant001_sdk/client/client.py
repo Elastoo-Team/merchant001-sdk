@@ -139,7 +139,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         body_data = result.get_json() or {}
 
-        if result.status_code != http.HTTPStatus.OK:
+        if result.status_code != http.HTTPStatus.CREATED:
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
@@ -316,7 +316,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         response = await self._client.request(
             method,
             path,
-            data=request_validator(**data).data if data and request_validator else data if data else None,
+            json=request_validator(**data).data if data and request_validator else data if data else None,
             cookies=self.cookies,
             params=params,
         )

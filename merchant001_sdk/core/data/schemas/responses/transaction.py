@@ -42,14 +42,22 @@ class CreatedTransaction(BaseSchema):
     selectedProvider: TransactionSelectedProvider = field()
 
     fee: float | None = field(default=None)
+    amountWithFee: float | None = field(default=None)
     currentPaymentFee: float | None = field(default=None)
 
     outcomeAddress: str | None = field(default=None)
 
+    paymentUrl: str | None = field(default=None)
     redirectUrl: str | None = field(default=None)
     cancelUrl: str | None = field(default=None)
 
     isPartnerFee: bool = field(default=False)
+
+    customProperties: t.Any | None = field(default=None)
+    createdAt: t.Any | None = field(default=None)
+    updatedAt: t.Any | None = field(default=None)
+    expiredAt: t.Any | None = field(default=None)
+    providerId: str | None = field(default=None)
 
     @property
     def data(self) -> dict[str, str | float | None | bool | dict[str, t.Any]]:
