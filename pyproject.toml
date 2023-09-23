@@ -7,7 +7,7 @@ authors = [
 dependencies = [
     "httpx[brotli,http2,socks]>=0.24.0",
 ]
-requires-python = ">=3.10,<3.12"
+requires-python = ">=3.10,<=3.12"
 license = {text = "EULA"}
 dynamic = ["version"]
 readme = "README.md"
