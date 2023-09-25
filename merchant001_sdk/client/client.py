@@ -211,7 +211,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         body_data = result.get_json() or {}
 
-        if result.status_code != http.HTTPStatus.OK:
+        if result.status_code != http.HTTPStatus.CREATED:
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
@@ -235,7 +235,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         body_data = result.get_json() or {}
 
-        if result.status_code != http.HTTPStatus.OK:
+        if result.status_code != http.HTTPStatus.CREATED:
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
@@ -262,7 +262,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         body_data = result.get_json() or {}
 
-        if result.status_code != http.HTTPStatus.OK:
+        if result.status_code != http.HTTPStatus.CREATED:
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
