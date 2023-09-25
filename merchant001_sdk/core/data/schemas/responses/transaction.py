@@ -35,11 +35,11 @@ class CreatedTransaction(BaseSchema):
     id: str = field()
     userId: str = field()
 
-    status: str = field()
-    direction: str = field()
-
     pricing: dict[str, TransactionPricing] = field()
     selectedProvider: TransactionSelectedProvider = field()
+
+    status: str | None = field(default=None)
+    direction: str | None = field(default=None)
 
     fee: float | None = field(default=None)
     amountWithFee: float | None = field(default=None)
@@ -86,10 +86,24 @@ class Transaction(BaseSchema):
     pricing: dict[str, TransactionPricing] = field()
     selectedProvider: TransactionSelectedProvider = field()
 
+    direction: str | None = field(default=None)
+    id: str | None = field(default=None)
+    outcomeAddress: str | None = field(default=None)
+    isPartnerFee: bool = field(default=False)
+
+    fee: float | None = field(default=False)
+    currentPaymentFee: float | None = field(default=False)
+    amountWithFee: float | None = field(default=False)
+
+    paymentUrl: str | None = field(default=None)
     redirectUrl: str | None = field(default=None)
     cancelUrl: str | None = field(default=None)
 
-    isPartnerFee: bool = field(default=False)
+    customProperties: t.Any | None = field(default=None)
+    createdAt: t.Any | None = field(default=None)
+    updatedAt: t.Any | None = field(default=None)
+    expiredAt: t.Any | None = field(default=None)
+    providerId: str | None = field(default=None)
 
     @property
     def data(self) -> dict[str, str | float | None | bool | dict[str, t.Any]]:
@@ -101,6 +115,8 @@ class Transaction(BaseSchema):
             "redirectUrl": self.redirectUrl,
             "cancelUrl": self.cancelUrl,
             "isPartnerFee": self.isPartnerFee,
+            "fee": self.fee,
+            "currentPaymentFee": self.currentPaymentFee,
         }
 
 

@@ -262,7 +262,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
 
         body_data = result.get_json() or {}
 
-        if result.status_code != http.HTTPStatus.CREATED:
+        if result.status_code not in (http.HTTPStatus.CREATED, http.HTTPStatus.OK):
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
