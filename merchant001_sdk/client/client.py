@@ -118,8 +118,8 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     async def create_transaction(
         self,
         pricing: dict[str, dict[str, str | float]],
-        provider_type: str,
-        provider_method: str,
+        provider_type: str | None = None,
+        provider_method: str | None = None,
         is_partner_fee: bool = False,
     ) -> responses.transaction.CreatedTransaction | responses.ErrorResult:
         """create_transaction."""
@@ -127,8 +127,10 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         data = {
             "isPartnerFee": is_partner_fee,
             "pricing": pricing,
-            "selectedProvider": {"type": provider_type, "method": provider_method},
         }
+
+        if provider_type and provider_method:
+            data["selectedProvider"] = {"type": provider_type, "method": provider_method}
 
         result: responses.RawResult = await self._request(  # type: ignore
             "POST",
@@ -188,6 +190,12 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
         body_data = result.get_json() or {}
 
         if result.status_code != http.HTTPStatus.OK:
+            if (
+                body_data.get("statusCode") == 400
+                and (body_data.get("message", "") or "").lower() == "bitconce order is closed"
+            ):
+                body_data["message"] = "Order is closed"
+
             return responses.ErrorResult(
                 status_code=result.status_code,
                 message=body_data.get("message"),
