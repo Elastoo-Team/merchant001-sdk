@@ -128,10 +128,11 @@ ErrorResult(status_code=401, message='Unavailable api token', error='Unauthorize
 ### Create Transaction
 
 Params:
-pricing (mapping[str, mapping[str, str | float]]) - eq. to pricing.
-provider_type (str) - eq. to selectedProvider.type.
-provider_method (str) - eq. to selectedProvider.method.
-is_partner_fee (boolean) - eq. to amount, default is null (optional).
+
+- pricing (mapping[str, mapping[str, str | float]]) - eq. to pricing.
+- provider_type (str) - eq. to selectedProvider.type.
+- provider_method (str) - eq. to selectedProvider.method.
+- is_partner_fee (boolean) - eq. to amount, default is null (optional).
 
 ```python3
 from merchant001_sdk import Client

@@ -4,7 +4,9 @@ from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 
 @dataclass(frozen=True, kw_only=True)
-class PayemntMethodRate(BaseSchema):
+class PaymentMethodRate(BaseSchema):
+    """Data of current rate for payment method."""
+
     method: str = field()
     rate: float = field()
 

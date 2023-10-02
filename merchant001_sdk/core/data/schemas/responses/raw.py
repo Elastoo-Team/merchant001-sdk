@@ -8,6 +8,8 @@ from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 @dataclass(frozen=True, kw_only=True)
 class RawResult(BaseSchema):
+    """Raw json result."""
+
     status_code: http.HTTPStatus = field()
     body: t.Any | None = field(default=None)
     content_type: str | None = field(default=None)

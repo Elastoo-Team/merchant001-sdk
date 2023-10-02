@@ -16,11 +16,11 @@ from merchant001_sdk.core.errors.client_closed import SDKClientClosed
 from merchant001_sdk.core.errors.http_error import ClientResponseHTTPError
 
 
-def sync_or_async() -> t.Callable[[t.Callable[[t.Any], t.Any]], t.Any]:
+def sync_or_async() -> t.Callable[[t.Any], t.Any]:
     """Sync_or_async."""
 
     def decorator(
-        func: t.Callable[[t.Any], t.Any],
+        func: t.Any,
     ) -> t.Callable[[Client, t.Tuple[t.Any, ...], t.Dict[str, t.Any]], t.Union[t.Any, t.Coroutine[None, None, None]]]:
         @functools.wraps(func)
         def wrapper(
@@ -283,7 +283,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
     async def get_payment_method_rate(
         self,
         payment_method: str,
-    ) -> responses.rate.PayemntMethodRate | responses.ErrorResult:
+    ) -> responses.rate.PaymentMethodRate | responses.ErrorResult:
         """claim_transaction_canceled."""
 
         result: responses.RawResult = await self._request(  # type: ignore
@@ -302,7 +302,7 @@ class Client(BaseSchema, AbstractAsyncContextManager["Client"], AbstractContextM
                 error=body_data.get("error"),
             )
 
-        return responses.rate.PayemntMethodRate(**body_data)
+        return responses.rate.PaymentMethodRate(**body_data)
 
     async def _request(
         self,

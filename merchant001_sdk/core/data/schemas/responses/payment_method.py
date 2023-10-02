@@ -5,6 +5,8 @@ from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 @dataclass(frozen=True, kw_only=True)
 class PaymentMethod(BaseSchema):
+    """Method and type are needed when creating a transaction or setting a payment method later."""
+
     type: str = field()
     name: str = field()
     method: str = field()
@@ -17,6 +19,8 @@ class PaymentMethod(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class PaymentMethodType(BaseSchema):
+    """Method and type are needed when creating a transaction or setting a payment method later."""
+
     type: str = field()
     methods: list[PaymentMethod | str] = field(default_factory=list)
 

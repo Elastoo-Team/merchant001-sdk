@@ -8,14 +8,18 @@ dependencies = [
     "httpx[brotli,http2,socks]>=0.24.0",
 ]
 requires-python = ">=3.10,<=3.12"
-license = {text = "EULA"}
+license = {file = "LICENSE"}
 dynamic = ["version"]
 readme = "README.md"
+keywords = ["CLI", "client", "convertation", "crypto", "usdt"]
+classifiers = ["Development Status :: 5 - Production/Stable", "Environment :: Other Environment", "Intended Audience :: Developers", "Intended Audience :: Science/Research", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python", "Topic :: Software Development :: Libraries :: Python Modules"]
 
 [project.scripts]
 merchant001-sdk = "merchant001_sdk.__main__:start"
 
 [project.urls]
+repository = "https://github.com/Egnod/merchant001_sdk"
+documentation = "https://merchant001_sdk.readthedocs.io"
 
 [project.optional-dependencies]
 cli = [
@@ -31,17 +35,11 @@ dev = [
     "pre-commit==2.20.0",
     "interrogate==1.5.0",
     "doq==0.9.1",
-    "Sphinx==5.1.1",
-    "sphinx-markdown-builder==0.5.5",
-    "sphinx-autodoc-annotation==1.0-1",
-    "sphinxcontrib-autoprogram==0.1.7",
-    "autodoc-pydantic==1.7.2",
-    "sphinx-click==4.3.0",
-    "Pallets-Sphinx-Themes==2.0.2",
-    "sphinx-code-include==1.1.1",
-    "sphinx-pyproject==0.1.0",
     "commitizen==2.31.0",
     "ipykernel==6.17.1",
+    "mkdocs==1.4.1",
+    "mkdocs-material==8.5.10",
+    "mkdocstrings[python]==0.19.0"
 ]
 
 [tool.pdm.build]

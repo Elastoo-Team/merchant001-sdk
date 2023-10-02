@@ -7,6 +7,8 @@ from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 @dataclass(frozen=True, kw_only=True)
 class ErrorResult(BaseSchema):
+    """Error response for queries."""
+
     status_code: http.HTTPStatus = field()
     message: str | None = field(default=None)
     error: str | None = field(default=None)

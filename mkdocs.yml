@@ -1,0 +1,48 @@
+site_name: Merchant001 SDK
+site_url: https://merchant001_sdk.rtfd.io/
+
+repo_name: Elastoo-Team/merchant001-sdk
+repo_url: https://github.com/Elastoo-Team/merchant001-sdk
+edit_uri: ""
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+      # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+      # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  logo: logo.png
+
+plugins:
+  - mkdocstrings
+  - search:
+      indexing: "full"
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+nav:
+  - "Install & First Overview": index.md

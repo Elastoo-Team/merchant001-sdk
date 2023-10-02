@@ -6,6 +6,8 @@ from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 @dataclass(frozen=True, kw_only=True)
 class TransactionPricing(BaseSchema):
+    """Transaction price amount (value) and currency."""
+
     amount: float = field()
     currency: str = field()
 
@@ -19,6 +21,8 @@ class TransactionPricing(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class TransactionSelectedProvider(BaseSchema):
+    """Transaction payment's method and type."""
+
     type: str | None = field(default=None)
     method: str | None = field(default=None)
 
@@ -32,6 +36,8 @@ class TransactionSelectedProvider(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class CreatedTransaction(BaseSchema):
+    """Returns for created transaction."""
+
     id: str = field()
     userId: str = field()
 
@@ -78,8 +84,9 @@ class CreatedTransaction(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class Transaction(BaseSchema):
+    """Full transaction schema."""
+
     userId: str = field()
-    providerId: str = field()
 
     status: str = field()
 
@@ -122,6 +129,8 @@ class Transaction(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class GettedTransaction(BaseSchema):
+    """Full already exist transaction data and status of transaction."""
+
     status: str = field()
     transaction: Transaction = field()
 
@@ -132,6 +141,8 @@ class GettedTransaction(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class Requisite(BaseSchema):
+    """Requisite data."""
+
     accountNumber: str = field()
     accountName: str = field()
     method: str = field()
@@ -153,6 +164,8 @@ class Requisite(BaseSchema):
 
 @dataclass(frozen=True, kw_only=True)
 class GettedTransactionRequisite(BaseSchema):
+    """Trasnaction view of requisite."""
+
     requisite: Requisite = field()
     transaction: Transaction = field()
 

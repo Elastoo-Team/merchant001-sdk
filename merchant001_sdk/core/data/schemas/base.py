@@ -26,4 +26,6 @@ class BaseSchema:
 
     @property
     def data(self) -> dict[str, t.Any]:
+        """Fields data to dict."""
+
         raise NotImplementedError()
