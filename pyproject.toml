@@ -124,7 +124,7 @@ disable_error_code = ["valid-type", "call-arg"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.0.13"
+version = "0.0.14"
 version_files = [
     "merchant001_sdk/__about__.py:__version__",
 ]
