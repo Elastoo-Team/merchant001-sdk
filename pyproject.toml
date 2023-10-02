@@ -18,7 +18,7 @@ classifiers = ["Development Status :: 5 - Production/Stable", "Environment :: Ot
 merchant001-sdk = "merchant001_sdk.__main__:start"
 
 [project.urls]
-repository = "https://github.com/Egnod/merchant001_sdk"
+repository = "https://github.com/Elastoo-Team/merchant001_sdk"
 documentation = "https://merchant001_sdk.readthedocs.io"
 
 [project.optional-dependencies]
