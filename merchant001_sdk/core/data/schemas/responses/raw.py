@@ -15,8 +15,22 @@ class RawResult(BaseSchema):
     content_type: str | None = field(default=None)
 
     def get_json(self) -> dict[str, t.Any]:
+        """get_json.
+
+        Args:
+
+        Returns:
+            dict[str, t.Any]:
+        """
         return json.loads(self.body)
 
     @property
     def data(self) -> dict[str, t.Any]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, t.Any]:
+        """
         return {"status_code": self.status_code, "body": self.body, "content_type": self.content_type}

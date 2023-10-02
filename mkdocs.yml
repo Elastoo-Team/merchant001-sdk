@@ -34,6 +34,8 @@ plugins:
   - mkdocstrings
   - search:
       indexing: "full"
+  - ringcentral-api-index:
+      outfile: quick-reference.md
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -45,4 +47,8 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - "Install & First Overview": index.md
+  - "Home": index.md
+  - "Install": install/index.md
+  - "Overview": overview/index.md
+  - "Client Reference": client_reference.md
+  - "Schemas Reference": schemas_reference.md

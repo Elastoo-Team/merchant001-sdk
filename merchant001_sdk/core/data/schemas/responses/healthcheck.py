@@ -11,6 +11,13 @@ class MerchantHealthcheck(BaseSchema):
 
     @property
     def data(self) -> dict[str, bool]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, bool]:
+        """
         return {
             "success": self.success,
         }

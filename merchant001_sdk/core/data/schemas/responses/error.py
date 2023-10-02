@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from merchant001_sdk.core.data.schemas.base import BaseSchema
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class ErrorResult(BaseSchema):
     """Error response for queries."""
 
@@ -15,4 +15,11 @@ class ErrorResult(BaseSchema):
 
     @property
     def data(self) -> dict[str, t.Any]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, t.Any]:
+        """
         return {"status_code": self.status_code, "error": self.error, "message": self.message}

@@ -12,4 +12,11 @@ class PaymentMethodRate(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | float]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | float]:
+        """
         return {"method": self.method, "rate": self.rate}

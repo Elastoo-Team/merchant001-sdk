@@ -60,3 +60,4 @@ urllib3==1.26.12
 virtualenv==20.16.3
 watchdog==2.1.9
 wcwidth==0.2.5
+mkdocs-ringcentral-api-index==0.1.7

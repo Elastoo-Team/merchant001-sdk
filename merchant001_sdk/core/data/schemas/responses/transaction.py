@@ -13,6 +13,13 @@ class TransactionPricing(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | float]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | float]:
+        """
         return {
             "amount": self.amount,
             "currency": self.currency,
@@ -28,6 +35,13 @@ class TransactionSelectedProvider(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | None]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | None]:
+        """
         return {
             "type": self.type,
             "method": self.method,
@@ -67,6 +81,13 @@ class CreatedTransaction(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | float | None | bool | dict[str, t.Any]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | float | None | bool | dict[str, t.Any]]:
+        """
         return {
             "id": self.id,
             "userId": self.userId,
@@ -114,6 +135,13 @@ class Transaction(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | float | None | bool | dict[str, t.Any]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | float | None | bool | dict[str, t.Any]]:
+        """
         return {
             "userId": self.userId,
             "status": self.status,
@@ -136,6 +164,13 @@ class GettedTransaction(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | dict[str, t.Any]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | dict[str, t.Any]]:
+        """
         return {"status": self.status, "transaction": self.transaction.data}
 
 
@@ -152,6 +187,13 @@ class Requisite(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | dict[str, t.Any]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | dict[str, t.Any]]:
+        """
         return {
             "accountNumber": self.accountNumber,
             "accountName": self.accountName,
@@ -171,4 +213,11 @@ class GettedTransactionRequisite(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | dict[str, t.Any]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | dict[str, t.Any]]:
+        """
         return {"requisite": self.requisite.data, "transaction": self.transaction.data}

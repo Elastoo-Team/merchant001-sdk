@@ -14,6 +14,13 @@ class PaymentMethod(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | str | None]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | str | None]:
+        """
         return {"type": self.type, "name": self.name, "method": self.method, "imageUrl": self.imageUrl}
 
 
@@ -26,4 +33,11 @@ class PaymentMethodType(BaseSchema):
 
     @property
     def data(self) -> dict[str, str | list[dict[str, str | str | None]]]:
+        """data.
+
+        Args:
+
+        Returns:
+            dict[str, str | list[dict[str, str | str | None]]]:
+        """
         return {"type": self.type, "methods": [m.data if isinstance(m, PaymentMethod) else m for m in self.methods]}  # type: ignore
