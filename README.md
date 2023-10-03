@@ -279,7 +279,7 @@ from merchant001_sdk import Client
 
 async def main(token: str, transaction_id: str, filepath: str) -> None:
     async with Client(token=token, endpoint="https://api.merchant001.io/") as client:
-        result = await client.get_payment_method_rate(
+        result = await client.upload_payment_receipt(
             transaction_id=transaction_id, receipt_file=filepath
         )
 
