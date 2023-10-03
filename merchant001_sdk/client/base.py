@@ -86,6 +86,8 @@ class BaseClient(BaseSchema, AbstractAsyncContextManager["BaseClient"], Abstract
         request_validator: type[BaseSchema] | None = None,
         response_validator: type[BaseSchema] | None = None,
         data: dict[str, t.Any] | None = None,
+        form: dict[str, t.Any] | None = None,
+        files: dict[str, t.Any] | None = None,
         success_status: tuple[http.HTTPStatus, ...] = (http.HTTPStatus.OK,),
         params: dict[str, t.Any] | None = None,
     ) -> BaseSchema | list[BaseSchema] | None:
@@ -115,6 +117,8 @@ class BaseClient(BaseSchema, AbstractAsyncContextManager["BaseClient"], Abstract
             json=request_validator(**data).data if data and request_validator else data if data else None,
             cookies=self.cookies,
             params=params,
+            data=form,
+            files=files,
         )
 
         if return_raw and response.status_code in success_status:

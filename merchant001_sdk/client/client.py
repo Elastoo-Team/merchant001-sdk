@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import http
+import io
+import pathlib
 import typing as t
 from dataclasses import dataclass, field
 
@@ -316,3 +318,52 @@ class Client(BaseClient):
         body_data = result.get_json() or {}
 
         return responses.rate.PaymentMethodRate(**body_data)
+
+    @sync_or_async()
+    async def upload_payment_receipt(
+        self,
+        transaction_id: str,
+        receipt_file: str | pathlib.Path | io.BufferedReader,
+        amount: float | None = None,
+    ) -> responses.StatusStub | responses.ErrorResult:
+        """upload_payment_receipt.
+
+        Args:
+            transaction_id (str): transaction_id
+            receipt_file (str | pathlib.Path | io.BufferedReader): receipt_file
+            amount (float | None): amount
+
+        Returns:
+            responses.StatusStub | responses.ErrorResult:
+        """
+        form_data = {}
+
+        if amount is not None:
+            form_data["amount"] = amount
+
+        if isinstance(receipt_file, str):
+            receipt_file = pathlib.Path(receipt_file)
+
+        if isinstance(receipt_file, pathlib.Path) and (not receipt_file.exists() or not receipt_file.is_file()):
+            raise FileNotFoundError(f"Receipt file by path {receipt_file} not found!")
+
+        elif isinstance(receipt_file, pathlib.Path):
+            receipt_file = receipt_file.open(mode="rb")
+
+        files = {"file": receipt_file}
+
+        result: responses.RawResult | responses.ErrorResult = await self._request(  # type: ignore
+            "POST",
+            f"v1/transaction/merchant/receipt/{transaction_id}",
+            return_raw=True,
+            form=form_data,
+            files=files,
+            success_status=(http.HTTPStatus.OK, http.HTTPStatus.CREATED),
+        )
+
+        if isinstance(result, responses.ErrorResult):
+            return result
+
+        body_data = result.get_json() or {}
+
+        return responses.StatusStub(**body_data)

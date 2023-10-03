@@ -233,3 +233,30 @@ On Success:
 ```python3
 PaymentMethodRate(method='sberbank', rate=103.38)
 ```
+
+### Upload payment receipt
+
+Params:
+
+- transaction_id (str)
+- receipt_file (str) - filepath or opened file with mode "rb".
+- amount (float; optional) - if you need to specify the amount.
+
+```python3
+from merchant001_sdk import Client
+
+
+async def main(token: str, transaction_id: str, filepath: str) -> None:
+    async with Client(token=token, endpoint="https://api.merchant001.io/") as client:
+        result = await client.get_payment_method_rate(
+            transaction_id=transaction_id, receipt_file=filepath
+        )
+
+    print(result)
+```
+
+On Success:
+
+```python3
+StatusStub(status=True)
+```
