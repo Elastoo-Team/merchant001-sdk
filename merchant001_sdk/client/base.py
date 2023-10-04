@@ -169,9 +169,14 @@ class BaseClient(BaseSchema, AbstractAsyncContextManager["BaseClient"], Abstract
     async def _open(self) -> None:
         """_open."""
 
+        timeout = httpx.Timeout(timeout=15, write=30)
+        limits = httpx.Limits(max_connections=5, max_keepalive_connections=5)
+
         self._client = httpx.AsyncClient(
             base_url=self.endpoint,
             headers={"Authorization": f"{self.token_prefix} {self.token}"},
+            timeout=timeout,
+            limits=limits,
         )
 
         await self._client.__aenter__()

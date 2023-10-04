@@ -5,7 +5,7 @@ authors = [
     {name = "Alexander Lavrov", email = "alexander.lavrov@elastoo.com"},
 ]
 dependencies = [
-    "httpx[brotli,http2,socks]>=0.24.0",
+    "httpx>=0.24.0",
 ]
 requires-python = ">=3.10,<=3.12"
 license = {file = "LICENSE"}
