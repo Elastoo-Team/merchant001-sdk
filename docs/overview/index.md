@@ -221,7 +221,7 @@ Params:
 from merchant001_sdk import Client
 
 
-async def main(token: str, transaction_id: str, payment_method: str) -> None:
+async def main(token: str, payment_method: str) -> None:
     async with Client(token=token, endpoint="https://api.merchant001.io/") as client:
         result = await client.get_payment_method_rate(payment_method=payment_method)
 
